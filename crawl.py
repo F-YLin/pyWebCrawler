@@ -1,8 +1,8 @@
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urljoin
 from bs4 import BeautifulSoup, Tag
 
 def normalize_url(input_url: str) -> str:
-    # Implementation for normalizing the URL
+    # implementation for normalizing the URL
     # function should remove the scheme (http:// or https://) from the URL
     # and return the normalized URL in lowercase without trailing slashes
     parsed_url = urlsplit(input_url)
@@ -13,7 +13,7 @@ def normalize_url(input_url: str) -> str:
     return output_url
 
 def get_heading_from_html(html: str) -> str:
-    # Implementation for extracting heading from HTML
+    # implementation for extracting heading from HTML
     # function should return the text content of the <h1> tag if present
     # or return the text content of <h2> tag as a fallback
     # Returns an empty string if neither an <h1> nor an <h2> tag is found
@@ -27,7 +27,7 @@ def get_heading_from_html(html: str) -> str:
     return ""
 
 def get_first_paragraph_from_html(html: str) -> str:
-    # Implementation for extracting the first paragraph from HTML
+    # implementation for extracting the first paragraph from HTML
     # function should return the text content of the first <p> tag if present
     # Returns an empty string if no <p> tag is found
     soup = BeautifulSoup(html, 'html.parser')
@@ -35,3 +35,32 @@ def get_first_paragraph_from_html(html: str) -> str:
     if p_tag:
         return p_tag.get_text(strip=True)
     return ""
+
+def get_urls_from_html(html: str, base_url: str) -> list:
+    # implementation for extracting URLs from HTML
+    # function should return un-normalized list of all the URLs found within the HTML
+    # this function would later allow us to rewrite relative URLs to absolute URLs
+    # parameter html is an HTML string
+    # parameter base_url is the root URL of the target website
+    soup = BeautifulSoup(html, 'html.parser')
+    urls = []
+    for tag in soup.find_all('a'):
+        value = tag.get('href')
+        if value:
+            joined_url = urljoin(base_url, value)
+            urls.append(joined_url)
+    return urls
+
+def get_images_from_html(html: str, base_url: str) -> list:
+    # implementation for extracting image URLs from HTML
+    # function should return a list of all the image URLs found within the HTML
+    # parameter html is an HTML string
+    # parameter base_url is the root URL of the target website
+    soup = BeautifulSoup(html, 'html.parser')
+    images = []
+    for tag in soup.find_all('img'):
+        value = tag.get('src')
+        if value:
+            joined_url = urljoin(base_url, value)
+            images.append(joined_url)
+    return images
