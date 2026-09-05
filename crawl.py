@@ -101,3 +101,43 @@ def get_html(url:str) -> str | Exception:
 
     if r.status_code == 200:
         return r.text
+
+def crawl_page(base_url:str, current_url=None, page_data=None) -> dict:
+    # implementation of page crawling using recursion to traverse a website
+    # Recursion helps to continue to crawl each URL we find on a page
+    # base_url is the root URL of the target website
+    # current_url is the URL of the page being crawled
+
+    if page_data is None:
+        page_data = {}
+
+    if current_url is None:
+        current_url = base_url
+
+    # Check if current_url and base_url on the same domain. If not, return (stop recursion)
+    if urlsplit(current_url).netloc != urlsplit(base_url).netloc:
+        return page_data
+
+    # get a nromalized version of the current_url
+    # check if we've already crawled this page by checking if the normalized URL
+    # is already a key in the page_data dictionary. If, yes, return. if no, crawl it
+    normalized_url = normalize_url(current_url)
+    if normalized_url in page_data:
+        return page_data
+
+    # get HTML from the current URL, and add a print statement so that
+    # we can watch the crawler in real time
+    html = get_html(current_url)
+    print(f"Crawling: {normalized_url}")
+
+    # assuming all went well with the request, use extract_page_data() to get data 
+    # from this page and add it to the page_data dictionary using 
+    # normalized URL as the key
+    # get all the URLs from the response body HTML
+    page_data[normalized_url] = extract_page_data(html, current_url)
+
+    # recursively crawl each URL on the page 
+    for url in page_data[normalized_url]['outgoing_links']:
+        page_data = crawl_page(base_url, url, page_data)
+
+    return page_data

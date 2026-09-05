@@ -1,6 +1,6 @@
 import sys
 
-from crawl import get_html
+from crawl import crawl_page, get_html
 
 def main():
     # # uv run example.py -v
@@ -22,7 +22,18 @@ def main():
     else:
         print(f"starting crawl of: {sys.argv[1]}")
 
-    print(get_html(sys.argv[1]))
+    #print(get_html(sys.argv[1]))
+
+    page_data = crawl_page(sys.argv[1])
+
+    print("Crawled pages:")
+    print("----------")
+    print(f"Number of crawled pages: {len(page_data)}")
+    print("----------")
+
+    # do something with the crawled data, e.g., save it to a file or database
+    for page in page_data.values():
+        print(page['heading'])
 
 if __name__ == "__main__":
     main()
