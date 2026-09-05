@@ -1,6 +1,7 @@
 from urllib.parse import urlsplit, urljoin
 from bs4 import BeautifulSoup, Tag
 from typing import TypedDict
+import requests
 
 class PageData(TypedDict):
     url: str
@@ -86,3 +87,17 @@ def extract_page_data(html: str, page_url: str) -> PageData:
         "outgoing_links": get_urls_from_html(html, page_url),
         "images": get_images_from_html(html, page_url)
     }
+
+def get_html(url:str) -> str | Exception:
+    # implementation for fetching HTML content from a URL
+    # uses a User-agent header so servers recognize the request
+    # Raise an error for failed requests or non-HTML responses
+    # returns the webpage's HTML content as a string
+    headers = {'user-agent': 'BootCrawler/1.0'}
+    r = requests.get(url, headers=headers)
+
+    if r.status_code >= 400:
+        raise Exception(f"Error fetching HTML from {url}: {r.status_code}")
+
+    if r.status_code == 200:
+        return r.text

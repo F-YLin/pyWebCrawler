@@ -1,5 +1,7 @@
 import sys
 
+from crawl import get_html
+
 def main():
     # # uv run example.py -v
     # print("Script name:", sys.argv[0])  # example.py
@@ -19,6 +21,8 @@ def main():
         
     else:
         print(f"starting crawl of: {sys.argv[1]}")
+
+    print(get_html(sys.argv[1]))
 
 if __name__ == "__main__":
     main()
