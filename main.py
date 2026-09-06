@@ -11,9 +11,11 @@ async def main() -> None:
     # if the number of CLI arguments is less than 2
     # print error message and exit with code 1
     args = sys.argv
+
     if len(args) < 4:
         print("usage python main.py <base_url> <max_concurrency> <max_pages>")
         sys.exit(1)
+
     if len(args) > 4:
         print("too many arguments provided")
         sys.exit(1)
@@ -23,6 +25,7 @@ async def main() -> None:
     if not args[2].isdigit():
         print("max_concurrency must be an integer")
         sys.exit(1)
+
     if not args[3].isdigit():
         print("max_pages must be an integer")
         sys.exit(1)
@@ -36,6 +39,7 @@ async def main() -> None:
 
     for page in page_data.values():
         print(f"Found {len(page['outgoing_links'])} outgoing links on {page['url']}")
+        write_json_report(page_data)
 
     sys.exit(0)
 

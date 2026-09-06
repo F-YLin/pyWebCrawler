@@ -205,6 +205,8 @@ class AsyncCrawler:
         await self.crawl_page(self.base_url)
         return self.page_data
 
-async def crawl_site_async(base_url: str) -> dict[str, PageData]:
-    async with AsyncCrawler(base_url) as crawler:
+async def crawl_site_async(
+    base_url: str, max_concurrency: int, max_pages: int
+) -> dict[str, PageData]:
+    async with AsyncCrawler(base_url, max_concurrency, max_pages) as crawler:
         return await crawler.crawl()
