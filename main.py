@@ -1,39 +1,43 @@
 import sys
+import asyncio
+from crawl import crawl_site_async
+from json_report import write_json_report
 
-from crawl import crawl_page, get_html
-
-def main():
+async def main() -> None:
     # # uv run example.py -v
     # print("Script name:", sys.argv[0])  # example.py
     # print("Argument:", sys.argv[1])     # -v
 
     # if the number of CLI arguments is less than 2
     # print error message and exit with code 1
-    if len(sys.argv) < 2:
-        print("no website provided")
+    args = sys.argv
+    if len(args) < 4:
+        print("usage python main.py <base_url> <max_concurrency> <max_pages>")
         sys.exit(1)
-
-    # if the number of CLI arguments is more than 2
-    # print error message and exit with code 1
-    if len(sys.argv) > 2:
+    if len(args) > 4:
         print("too many arguments provided")
         sys.exit(1)
-        
-    else:
-        print(f"starting crawl of: {sys.argv[1]}")
 
-    #print(get_html(sys.argv[1]))
+    base_url = args[1]
 
-    page_data = crawl_page(sys.argv[1])
+    if not args[2].isdigit():
+        print("max_concurrency must be an integer")
+        sys.exit(1)
+    if not args[3].isdigit():
+        print("max_pages must be an integer")
+        sys.exit(1)
 
-    print("Crawled pages:")
-    print("----------")
-    print(f"Number of crawled pages: {len(page_data)}")
-    print("----------")
+    max_concurrency = int(args[2])
+    max_pages = int(args[3])
 
-    # do something with the crawled data, e.g., save it to a file or database
+    print(f"Starting async crawl of: {base_url}")
+
+    page_data = await crawl_site_async(base_url, max_concurrency, max_pages)
+
     for page in page_data.values():
-        print(page['heading'])
+        print(f"Found {len(page['outgoing_links'])} outgoing links on {page['url']}")
+
+    sys.exit(0)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
